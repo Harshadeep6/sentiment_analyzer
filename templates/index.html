@@ -3,9 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentiment Analyzer</title>
+    <title>Sentiment Analysis</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .header-box {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #5f72ff, #b32222); /* Gradient background */
+            border-radius: 10px; /* Rounded corners */
+            color: white; /* Text color */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for the box */
+        }
+
+        .review-label {
+            font-size: 1.25rem; /* Increased font size */
+            font-weight: bold;  /* Make the text bold */
+            color: #333;        /* Slightly darker text color */
+            margin-bottom: 10px; /* Adds space below the label */
+            display: block;     /* Makes the label take full width */
+        }
+
+         .custom-textarea {
+            border: 2px solid #5f64ff;  /* Beautiful border with the same color as the header gradient */
+            border-radius: 10px;        /* Rounded corners */
+            padding: 10px;              /* Internal padding for better look */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow to give it depth */
+            font-size: 1rem;            /* Slightly larger font for readability */
+            transition: border-color 0.3s ease; /* Smooth transition on hover */
+        }
+
+        .gradient-btn {
+            color: black; /* Text color */
+            border: none; /* Removes the default border */
+            border-radius: 10px; /* Rounded corners */
+            padding: 8px 20px; /* Padding for better size */
+            font-size: 1.2rem; /* Font size */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background 0.3s ease; /* Smooth transition for background */
+            font-family: sans-serif;
+        }
+
+        #sentimentLabel h4 {
+            color: aquamarine;
+            font-size: 2rem;
+        }
+        
+        .gradient-result {
+            background: linear-gradient(to right, blue, red);
+            -webkit-background-clip: text;
+            color: transparent;
+            font-size: 2rem;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Hey Vick!</h1>
+    <div class="container mt-5">
+        <div class="header-box"> <!-- Added this div to wrap the header -->
+            <h1 class="text-center">Sentiment Analyzer</h1>
+        </div>
+        <form id="reviewForm" class="mt-4">
+            <div class="form-group">
+                <label for="review" class="review-label text-center">Enter your review:</label>
+                <textarea class="form-control custom-textarea" id="review" rows="4" placeholder="Type your review here..."></textarea>
+            </div>
+           <div class="text-center mt-4">
+                <button type="button" class="btn btn-success gradient-btn" onclick="submitReview()">Submit</button>
+            </div>
+        </form>
+
+        <div id="sentimentLabel" class="text-center mt-5"><span id="result"></span></div>
+    </div>
+
+    <script>
+        function submitReview() {
+            const review = document.getElementById('review').value;
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ review: review }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (document.getElementById('review').value !== '') {
+                    document.getElementById('sentimentLabel').innerHTML = `<h4>It's a <span class="gradient-result">${data.sentiment}</span> review.</h4>`;
+                }
+                // document.getElementById('result').innerHTML = `<h4>${data.sentiment}</h4>`;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = `<h4>Error: ${error.message}</h4>`;
+            });
+        }
+    </script>
 </body>
 </html>
